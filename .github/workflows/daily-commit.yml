@@ -2,13 +2,16 @@ name: Daily Commit
 
 on:
   schedule:
-    # Runs every day at 07:30 UTC (you can change this time)
-    - cron: '30 7 * * *'
-  workflow_dispatch:  # Allows manual trigger for testing
+    - cron: '30 7 * * *'  # runs daily at 07:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write  # 👈 REQUIRED so it can push to the repo
 
 jobs:
   commit_job:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,4 +26,5 @@ jobs:
           git config user.email "25f1000979@ds.study.iitm.ac.in"
           git add last_run.txt
           git commit -m "Daily commit: $(date -u)" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
